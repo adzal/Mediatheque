@@ -2,17 +2,15 @@ import java.io.Serializable;
 
 public abstract class Media implements Serializable {
 	protected String title;
-	protected String mediaType;
 	protected int noAvailable = 1;
 
-	public Media(String title, String mediaType) {
+	public Media(String title) {
 		this.title = title;
-		this.mediaType = mediaType;
 	}
 
 	@Override
 	public String toString() {
-		return title + ", mediaType=" + mediaType;
+		return title + ", mediaType=" + getClass().getName();
 	}
 
 	public String display() {

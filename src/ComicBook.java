@@ -3,7 +3,7 @@ public class ComicBook extends Book {
 	private int issueNumber;
 
 	public ComicBook(String title, int issueNumber, int pages) {
-		super(title, pages, "ComicBook");
+		super(title, pages);
 		this.issueNumber = issueNumber;
 	}
 
