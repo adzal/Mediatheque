@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -6,6 +7,11 @@ public class Mediatheque {
 	private String name;
 	private ArrayList<Media> availableMedia = new ArrayList<Media>();
 	private ArrayList<Media> borrowedMedia = new ArrayList<Media>();
+
+	public Mediatheque(String name) {
+		this.setName(name);
+		getTestMedia();
+	}
 
 	@Override
 	public String toString() {
@@ -18,11 +24,6 @@ public class Mediatheque {
 
 	public void addMedia(Media media) {
 		availableMedia.add(media);
-	}
-
-	public Mediatheque(String name) {
-		this.setName(name);
-		getTestMedia();
 	}
 
 	public String getName() {
@@ -65,12 +66,7 @@ public class Mediatheque {
 		while (choice != 'Q') {
 			System.out.println("\nWelcome to " + name + ".");
 
-			if (borrowedMedia.size() > 0) {
-				System.out.println("Here is what you've selected so far:");
-				for (Media media : borrowedMedia) {
-					System.out.println(" ".repeat(4) + media.toString());
-				}
-			}
+			showBorrowedMedia();
 
 			System.out.println("(L)ist all");
 			System.out.println("(D)vds");
@@ -78,33 +74,76 @@ public class Mediatheque {
 			System.out.println("(C)omicbooks");
 			System.out.println("(M)agazine");
 			System.out.println();
+			System.out.println("(S)ave media list");
+			System.out.println("(R)estore media list");
+			System.out.println();
 			System.out.println("(Q)uit");
 			System.out.println();
-			System.out.println("What type of media do you want to borrow?\n");
+			System.out.print("Choice>");
 
 			// Input choice
 			String line = scanner.nextLine().toUpperCase();
 			choice = line.charAt(0);
-
+			System.out.println();
+			
 			switch (choice) {
 			case 'L' -> mediaMenu();
 			case 'D' -> mediaMenu(Dvd.class);
 			case 'B' -> mediaMenu(Book.class);
 			case 'C' -> mediaMenu(ComicBook.class);
 			case 'M' -> mediaMenu(Magazine.class);
+			case 'S' -> backup();
+			case 'R' -> restore();
 			case 'Q' -> System.out.println("Thank you for your visit to " + name + ".\nCome back soon :)");
 			default -> System.out.println("Invalid request!");
 			}
 		}
 	}
 
+	private void backup() {
+		try {
+			MediaSerializer m = new MediaSerializer();
+			m.backupMedia("availablemedia.json", availableMedia);
+			m.backupMedia("borrowedMedia.json", borrowedMedia);
+
+			System.out.printf("Data is serialized");
+		} catch (IOException e) {
+			System.out.printf("Serialization failed, err:" + e.getMessage());
+		}
+	}
+
+	private void restore() {
+		try {
+			MediaSerializer m = new MediaSerializer();
+			availableMedia = m.restoreMedia("availablemedia.json");
+			borrowedMedia = m.restoreMedia("borrowedMedia.json");
+		} catch (IOException i) {
+			System.out.printf("Serialization failed, err:" + i.getMessage());
+
+		} catch (ClassNotFoundException c) {
+			System.out.printf("Serialization failed, err:" + c.getMessage());
+		}
+	}
+
+	private void showBorrowedMedia() {
+		if (borrowedMedia.size() > 0) {
+			System.out.println("Here is what you've selected so far:");
+			for (Media media : borrowedMedia) {
+				System.out.println(" ".repeat(4) + media.toString());
+			}
+		}
+	}
+
+	/**
+	 * For all media pass null.
+	 */
 	private void mediaMenu() {
 		mediaMenu(null);
 	}
 
 	/**
 	 * This accepts as parameter the type of class to process if null displays all
-	 * items. The <T> is for generics.
+	 * items. The <T> is for the generic type passed.
 	 * 
 	 * @param <T>
 	 * @param type
@@ -112,7 +151,7 @@ public class Mediatheque {
 	private <T> void mediaMenu(T type) {
 		int index = 0;
 
-		// build a list of media for this category
+		// build and display a list of media for this type passed
 		System.out.println("What do you want to borrow?");
 		ArrayList<Media> toBorrow = new ArrayList<Media>();
 		for (Media media : availableMedia) {

@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public abstract class Media {
+public abstract class Media implements Serializable {
 	protected String title;
 	protected String mediaType;
 	protected int noAvailable = 1;
