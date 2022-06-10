@@ -51,6 +51,7 @@ public class Mediatheque {
 
 		addMedia(new ComicBook("2000 AD", 1, 30));
 		addMedia(new ComicBook("The Walking Dead", 2, 42));
+		addMedia(new ComicBook("Invincible", 4, 55));
 		addMedia(new ComicBook("The Amazing Spider-Man", 1, 33));
 
 		addMedia(new Magazine("Time", "March", 2020, 42));
@@ -103,8 +104,8 @@ public class Mediatheque {
 	private void backup() {
 		try {
 			MediaSerializer m = new MediaSerializer();
-			m.backupMedia("availablemedia.json", availableMedia);
-			m.backupMedia("borrowedMedia.json", borrowedMedia);
+			m.backupMedia("availablemedia.ser", availableMedia);
+			m.backupMedia("borrowedMedia.ser", borrowedMedia);
 
 			System.out.printf("Data is serialized");
 		} catch (IOException e) {
@@ -115,8 +116,8 @@ public class Mediatheque {
 	private void restore() {
 		try {
 			MediaSerializer m = new MediaSerializer();
-			availableMedia = m.restoreMedia("availablemedia.json");
-			borrowedMedia = m.restoreMedia("borrowedMedia.json");
+			availableMedia = m.restoreMedia("availablemedia.ser");
+			borrowedMedia = m.restoreMedia("borrowedMedia.ser");
 		} catch (IOException i) {
 			System.out.printf("Serialization failed, err:" + i.getMessage());
 
